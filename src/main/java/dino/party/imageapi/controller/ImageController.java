@@ -6,10 +6,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dino.party.imageapi.exception.NotFound;
+import dino.party.imageapi.model.Background;
+import dino.party.imageapi.repository.BackgroundRepository;
 import dino.party.imageapi.service.ImageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -26,9 +30,19 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageController {
 
     private final ImageService imageService;
+    private final BackgroundRepository backgroundRepository;
 
-    public ImageController(ImageService imageService) {
+    public ImageController(ImageService imageService, BackgroundRepository backgroundRepository) {
         this.imageService = imageService;
+        this.backgroundRepository = backgroundRepository;
+    }
+
+    @PostMapping("/background")
+    public ResponseEntity postBackground(
+            @RequestParam("background") MultipartFile background
+    ) throws IOException {
+        return ResponseEntity.ok(
+                backgroundRepository.save(new Background(background.getBytes())));
     }
 
     @ApiOperation(value = "upload photo")
@@ -40,9 +54,13 @@ public class ImageController {
         if (StringUtils.isEmpty(barcode)) {
             throw new IllegalArgumentException("Empty barcode");
         }
-        return ResponseEntity.ok(
-                imageService.uploadPhoto(barcode, photo.getBytes())
-        );
+        try {
+            return ResponseEntity.ok(
+                    imageService.uploadPhoto(barcode, photo.getBytes()));
+        } catch (NotFound notFound) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("There are no backgrounds on server");
+        }
     }
 
     @GetMapping("/{barcode}")
@@ -69,7 +87,7 @@ public class ImageController {
         }
         response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
         response.getOutputStream().write(
-                imageService.findPhotosByBarcode(barcode).get(0).getImage());
+                imageService.findPhotosByBarcode(barcode).get(0).getEditedImage());
         response.getOutputStream().close();
     }
 }

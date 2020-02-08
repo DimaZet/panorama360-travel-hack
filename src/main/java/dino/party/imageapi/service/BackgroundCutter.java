@@ -1,18 +1,21 @@
 package dino.party.imageapi.service;
 
-import marvin.color.MarvinColorModelConverter;
-import marvin.image.MarvinImage;
-
-import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
+import marvin.color.MarvinColorModelConverter;
+import marvin.image.MarvinImage;
+import org.springframework.stereotype.Service;
+
 import static marvinplugins.MarvinPluginCollection.alphaBoundary;
 
+@Service
 public class BackgroundCutter {
 
-    public byte[] ChromaToBackground(byte[] bImage, byte[] bBackground, String format) throws IOException {
+    public byte[] chromaToBackground(byte[] bImage, byte[] bBackground, String format) throws IOException {
         MarvinImage image = new MarvinImage(ImageIO.read(new ByteArrayInputStream(bImage)));
         MarvinImage imageOut = new MarvinImage(image.getWidth(), image.getHeight());
         // Convert green to transparency
@@ -41,8 +44,7 @@ public class BackgroundCutter {
 
                 if(hsv[0] >= 50 && hsv[0] <= 160 && hsv[1] >= 0.4 && hsv[2] >= 0.3){
                     imageOut.setIntColor(x, y, 0, 127, 127, 127);
-                }
-                else{
+                } else{
                     imageOut.setIntColor(x, y, color);
                 }
 
@@ -70,8 +72,7 @@ public class BackgroundCutter {
         }
     }
 
-    private void setBackground(MarvinImage image, MarvinImage background)
-    {
+    private void setBackground(MarvinImage image, MarvinImage background) {
         for(int y=0; y<image.getHeight(); y++){
             for(int x=0; x<image.getWidth(); x++){
                 int alpha = image.getAlphaComponent(x,y);
