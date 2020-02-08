@@ -1,6 +1,7 @@
 package dino.party.imageapi.service;
 
 import dino.party.imageapi.exception.NotFound;
+import dino.party.imageapi.exception.UserAlreadyRegisteredException;
 import dino.party.imageapi.model.User;
 import dino.party.imageapi.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,10 @@ public class UserService {
         return user.isActive();
     }
 
-    public User createUser(String barcode) {
+    public User createUser(String barcode) throws UserAlreadyRegisteredException {
+        if (userRepository.findByBarcode(barcode).isPresent()) {
+            throw new UserAlreadyRegisteredException();
+        }
         User user = new User(barcode, true);
         return userRepository.save(user);
     }

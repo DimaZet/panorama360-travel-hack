@@ -1,6 +1,7 @@
 package dino.party.imageapi.controller;
 
 import dino.party.imageapi.exception.NotFound;
+import dino.party.imageapi.exception.UserAlreadyRegisteredException;
 import dino.party.imageapi.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,8 +34,12 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity addUser(@RequestParam(name = "barcode") String barcode) {
-        return ResponseEntity.ok(
-                userService.createUser(barcode));
+        try {
+            return ResponseEntity.ok(
+                    userService.createUser(barcode));
+        } catch (UserAlreadyRegisteredException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping
