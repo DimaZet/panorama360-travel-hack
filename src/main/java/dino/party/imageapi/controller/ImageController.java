@@ -2,6 +2,10 @@ package dino.party.imageapi.controller;
 
 import java.io.IOException;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import dino.party.imageapi.service.ImageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,4 +51,19 @@ public class ImageController {
                 imageService.findPhotosByBarcode(barcode)
         );
     }
+
+    @GetMapping("/display/{barcode}")
+    public void displayPhotoByBarcode(
+            @PathVariable("barcode") String barcode, HttpServletResponse response, HttpServletRequest request)
+            throws ServletException, IOException {
+
+        if (StringUtils.isEmpty(barcode)) {
+            throw new IllegalArgumentException("Empty barcode");
+        }
+        response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
+        response.getOutputStream().write(
+                imageService.findPhotosByBarcode(barcode).get(0).getImage());
+        response.getOutputStream().close();
+    }
+
 }
