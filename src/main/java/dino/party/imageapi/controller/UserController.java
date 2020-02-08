@@ -3,6 +3,9 @@ package dino.party.imageapi.controller;
 import dino.party.imageapi.exception.NotFound;
 import dino.party.imageapi.exception.UserAlreadyRegisteredException;
 import dino.party.imageapi.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/api/users")
+@Api("users")
 public class UserController {
 
     private final UserService userService;
@@ -22,8 +26,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @ApiOperation("Check is user still active")
     @GetMapping("/{barcode}/isActive")
-    public ResponseEntity isUserActive(@PathVariable String barcode) {
+    public ResponseEntity isUserActive(
+            @ApiParam(name = "barcode", required = true) @PathVariable String barcode
+    ) {
         try {
             return ResponseEntity.ok(
                     userService.isUserActive(barcode));
@@ -32,8 +39,11 @@ public class UserController {
         }
     }
 
+    @ApiOperation("Add active user")
     @PostMapping
-    public ResponseEntity addUser(@RequestParam(name = "barcode") String barcode) {
+    public ResponseEntity addUser(
+            @ApiParam(name = "barcode", required = true) @RequestParam(name = "barcode") String barcode
+    ) {
         try {
             return ResponseEntity.ok(
                     userService.createUser(barcode));
@@ -42,8 +52,10 @@ public class UserController {
         }
     }
 
+    @ApiOperation("Deactivate user")
     @DeleteMapping
-    public ResponseEntity deactivateUser(@RequestParam(name = "barcode") String barcode) {
+    public ResponseEntity deactivateUser(
+            @ApiParam(name = "barcode", required = true) @RequestParam(name = "barcode") String barcode) {
         try {
             userService.deactivateUserByBarcode(barcode);
             return ResponseEntity.ok().build();
