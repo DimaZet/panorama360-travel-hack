@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dino.party.imageapi.service.ImageService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -19,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/api/photos")
+@Api("photos")
 public class ImageController {
 
     private final ImageService imageService;
@@ -27,11 +31,12 @@ public class ImageController {
         this.imageService = imageService;
     }
 
+    @ApiOperation(value = "upload photo")
     @PostMapping
     public ResponseEntity uploadPhoto(
-            @RequestParam("barcode") String barcode,
-            @RequestParam("photo") MultipartFile photo
-            ) throws IOException {
+            @ApiParam(name = "barcode", required = true) @RequestParam("barcode") String barcode,
+            @ApiParam(name = "photo", required = true) @RequestParam("photo") MultipartFile photo
+    ) throws IOException {
         if (StringUtils.isEmpty(barcode)) {
             throw new IllegalArgumentException("Empty barcode");
         }
@@ -52,9 +57,11 @@ public class ImageController {
         );
     }
 
+    @ApiOperation(value = "get photo link")
     @GetMapping("/display/{barcode}")
     public void displayPhotoByBarcode(
-            @PathVariable("barcode") String barcode, HttpServletResponse response, HttpServletRequest request)
+            @ApiParam(name = "barcode", required = true) @PathVariable("barcode") String barcode,
+            HttpServletResponse response, HttpServletRequest request)
             throws ServletException, IOException {
 
         if (StringUtils.isEmpty(barcode)) {
@@ -65,5 +72,4 @@ public class ImageController {
                 imageService.findPhotosByBarcode(barcode).get(0).getImage());
         response.getOutputStream().close();
     }
-
 }
