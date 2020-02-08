@@ -14,8 +14,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User findByBarcode(String barcode) throws NotFound {
-        return userRepository.findByBarcode(barcode)
+    public boolean isUserActive(String barcode) throws NotFound {
+        User user = userRepository.findByBarcode(barcode)
                 .orElseThrow(NotFound::new);
+        return user.isActive();
+    }
+
+    public User createUser(String barcode) {
+        User user = new User(barcode, true);
+        return userRepository.save(user);
     }
 }

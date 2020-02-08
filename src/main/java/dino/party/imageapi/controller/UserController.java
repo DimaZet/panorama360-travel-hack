@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/api/users")
@@ -18,13 +20,19 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{barcode}")
-    public ResponseEntity findFirstActive(@PathVariable String barcode) {
+    @GetMapping("/{barcode}/isActive")
+    public ResponseEntity isUserActive(@PathVariable String barcode) {
         try {
             return ResponseEntity.ok(
-                    userService.findByBarcode(barcode).isActive());
+                    userService.isUserActive(barcode));
         } catch (NotFound notFound) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping
+    public ResponseEntity addUser(@RequestParam(name = "barcode") String barcode) {
+        return ResponseEntity.ok(
+                userService.createUser(barcode));
     }
 }
