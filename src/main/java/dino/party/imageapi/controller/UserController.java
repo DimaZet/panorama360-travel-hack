@@ -4,6 +4,7 @@ import dino.party.imageapi.exception.NotFound;
 import dino.party.imageapi.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,5 +35,15 @@ public class UserController {
     public ResponseEntity addUser(@RequestParam(name = "barcode") String barcode) {
         return ResponseEntity.ok(
                 userService.createUser(barcode));
+    }
+
+    @DeleteMapping
+    public ResponseEntity deactivateUser(@RequestParam(name = "barcode") String barcode) {
+        try {
+            userService.deactivateUserByBarcode(barcode);
+            return ResponseEntity.ok().build();
+        } catch (NotFound notFound) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

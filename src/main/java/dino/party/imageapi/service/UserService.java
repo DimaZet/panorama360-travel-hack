@@ -24,4 +24,11 @@ public class UserService {
         User user = new User(barcode, true);
         return userRepository.save(user);
     }
+
+    public void deactivateUserByBarcode(String barcode) throws NotFound {
+        User user = userRepository.findByBarcode(barcode)
+                .orElseThrow(NotFound::new);
+        user.setActive(false);
+        userRepository.save(user);
+    }
 }
