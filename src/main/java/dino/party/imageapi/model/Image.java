@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "photos")
 public class Image {
@@ -23,14 +22,19 @@ public class Image {
 
     @Lob
     @Column(name = "original_photo", nullable = false)
-    private byte[] image;
+    private byte[] originalImage;
+
+    @Lob
+    @Column(name = "edited_photo", nullable = false)
+    private byte[] editedImage;
 
     public Image() {
     }
 
-    public Image(String barcode, byte[] image) {
+    public Image(String barcode, byte[] originalImage, byte[] editedImage) {
         this.barcode = barcode;
-        this.image = image;
+        this.originalImage = originalImage;
+        this.editedImage = editedImage;
     }
 
     public Long getId() {
@@ -41,8 +45,16 @@ public class Image {
         return barcode;
     }
 
-    public byte[] getImage() {
-        return image;
+    public byte[] getEditedImage() {
+        return editedImage;
+    }
+
+    public void setEditedImage(byte[] editedImage) {
+        this.editedImage = editedImage;
+    }
+
+    public byte[] getOriginalImage() {
+        return originalImage;
     }
 
     public void setId(Long id) {
@@ -53,7 +65,7 @@ public class Image {
         this.barcode = barcode;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setOriginalImage(byte[] originalImage) {
+        this.originalImage = originalImage;
     }
 }
