@@ -1,5 +1,9 @@
 package dino.party.imageapi.controller;
 
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import dino.party.imageapi.exception.NotFound;
 import dino.party.imageapi.exception.UserAlreadyRegisteredException;
 import dino.party.imageapi.service.UserService;
@@ -96,6 +100,22 @@ public class UserController {
                     userService.findFirstFromQue().getBarcode());
         } catch (NotFound notFound) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostConstruct
+    private void init() throws UserAlreadyRegisteredException {
+        for (String s : List.of(
+                "1500000000042",
+                "1500000000080",
+                "1500000000097",
+                "1500000000035",
+                "1500000000028",
+                "1500000000011",
+                "1500000000004",
+                "1500000000103",
+                "1500000000110")) {
+            userService.createUser(s);
         }
     }
 }

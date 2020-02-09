@@ -64,10 +64,12 @@ public class ImageController {
         }
     }
 
+    @Deprecated
+    @ApiOperation(value = "deprecated", hidden = true)
     @GetMapping("/{barcode}")
     public ResponseEntity findPhotosByBarcode(
             @PathVariable("barcode") String barcode
-    ) {
+    ) throws NotFound {
         if (StringUtils.isEmpty(barcode)) {
             throw new IllegalArgumentException("Empty barcode");
         }
@@ -81,14 +83,14 @@ public class ImageController {
     public void displayPhotoByBarcode(
             @ApiParam(name = "barcode", required = true) @PathVariable("barcode") String barcode,
             HttpServletResponse response, HttpServletRequest request)
-            throws ServletException, IOException {
+            throws ServletException, IOException, NotFound {
 
         if (StringUtils.isEmpty(barcode)) {
             throw new IllegalArgumentException("Empty barcode");
         }
         response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
         response.getOutputStream().write(
-                imageService.findPhotosByBarcode(barcode).get(0).getEditedImage());
+                imageService.findPhotosByBarcode(barcode).getEditedImage());
         response.getOutputStream().close();
     }
 }

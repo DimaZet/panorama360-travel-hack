@@ -1,7 +1,6 @@
 package dino.party.imageapi.service;
 
 import java.io.IOException;
-import java.util.List;
 
 import dino.party.imageapi.exception.NotFound;
 import dino.party.imageapi.model.Image;
@@ -28,7 +27,7 @@ public class ImageService {
         return imageRepository.save(new Image(barcode, photo, editedPhoto));
     }
 
-    public List<Image> findPhotosByBarcode(String barcode) {
-        return imageRepository.findAllByBarcode(barcode);
+    public Image findPhotosByBarcode(String barcode) throws NotFound {
+        return imageRepository.findByBarcode(barcode).orElseThrow(NotFound::new);
     }
 }
