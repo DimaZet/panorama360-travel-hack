@@ -1,5 +1,9 @@
 package dino.party.imageapi.controller;
 
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import dino.party.imageapi.exception.NotFound;
 import dino.party.imageapi.exception.UserAlreadyRegisteredException;
 import dino.party.imageapi.service.UserService;
@@ -61,6 +65,57 @@ public class UserController {
             return ResponseEntity.ok().build();
         } catch (NotFound notFound) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @ApiOperation("Push user in que")
+    @PostMapping("/que")
+    public ResponseEntity pushInQue(
+            @ApiParam(name = "barcode", required = true) @RequestParam(name = "barcode") String barcode) {
+        try {
+            userService.pushInQue(barcode);
+            return ResponseEntity.ok().build();
+        } catch (NotFound notFound) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @ApiOperation("Remove user from que")
+    @DeleteMapping("/que")
+    public ResponseEntity removeFromQue(
+            @ApiParam(name = "barcode", required = true) @RequestParam(name = "barcode") String barcode) {
+        try {
+            userService.removeFromQue(barcode);
+            return ResponseEntity.ok().build();
+        } catch (NotFound notFound) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @ApiOperation("Find first from que")
+    @GetMapping("/que")
+    public ResponseEntity findFirstFromQue() {
+        try {
+            return ResponseEntity.ok(
+                    userService.findFirstFromQue().getBarcode());
+        } catch (NotFound notFound) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostConstruct
+    private void init() throws UserAlreadyRegisteredException {
+        for (String s : List.of(
+                "1500000000042",
+                "1500000000080",
+                "1500000000097",
+                "1500000000035",
+                "1500000000028",
+                "1500000000011",
+                "1500000000004",
+                "1500000000103",
+                "1500000000110")) {
+            userService.createUser(s);
         }
     }
 }

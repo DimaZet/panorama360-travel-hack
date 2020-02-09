@@ -7,13 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dino.party.imageapi.exception.NotFound;
-import dino.party.imageapi.model.Background;
-import dino.party.imageapi.repository.BackgroundRepository;
+import dino.party.imageapi.service.BackgroundService;
 import dino.party.imageapi.service.ImageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,19 +29,21 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageController {
 
     private final ImageService imageService;
-    private final BackgroundRepository backgroundRepository;
+    private final BackgroundService backgroundService;
 
-    public ImageController(ImageService imageService, BackgroundRepository backgroundRepository) {
+    public ImageController(ImageService imageService, BackgroundService backgroundService) {
         this.imageService = imageService;
-        this.backgroundRepository = backgroundRepository;
+        this.backgroundService = backgroundService;
     }
 
+    @ApiOperation(value = "replace background")
     @PostMapping("/background")
-    public ResponseEntity postBackground(
+    public ResponseEntity replaceBackground(
+            @ApiParam(name = "background", required = true)
             @RequestParam("background") MultipartFile background
     ) throws IOException {
         return ResponseEntity.ok(
-                backgroundRepository.save(new Background(background.getBytes())));
+                backgroundService.replaceBackground(background.getBytes()));
     }
 
     @ApiOperation(value = "upload photo")
@@ -64,10 +64,12 @@ public class ImageController {
         }
     }
 
+    @Deprecated
+    @ApiOperation(value = "deprecated", hidden = true)
     @GetMapping("/{barcode}")
     public ResponseEntity findPhotosByBarcode(
             @PathVariable("barcode") String barcode
-    ) {
+    ) throws NotFound {
         if (StringUtils.isEmpty(barcode)) {
             throw new IllegalArgumentException("Empty barcode");
         }
@@ -81,14 +83,14 @@ public class ImageController {
     public void displayPhotoByBarcode(
             @ApiParam(name = "barcode", required = true) @PathVariable("barcode") String barcode,
             HttpServletResponse response, HttpServletRequest request)
-            throws ServletException, IOException {
+            throws ServletException, IOException, NotFound {
 
         if (StringUtils.isEmpty(barcode)) {
             throw new IllegalArgumentException("Empty barcode");
         }
         response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
         response.getOutputStream().write(
-                imageService.findPhotosByBarcode(barcode).get(0).getEditedImage());
+                imageService.findPhotosByBarcode(barcode).getEditedImage());
         response.getOutputStream().close();
     }
 }

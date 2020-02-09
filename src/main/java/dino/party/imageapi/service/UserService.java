@@ -25,7 +25,7 @@ public class UserService {
         if (userRepository.findByBarcode(barcode).isPresent()) {
             throw new UserAlreadyRegisteredException();
         }
-        User user = new User(barcode, true);
+        User user = new User(barcode, true, false);
         return userRepository.save(user);
     }
 
@@ -33,6 +33,25 @@ public class UserService {
         User user = userRepository.findByBarcode(barcode)
                 .orElseThrow(NotFound::new);
         user.setActive(false);
+        userRepository.save(user);
+    }
+
+    public User findFirstFromQue() throws NotFound {
+        return userRepository.findAllByInQue(true).stream()
+                .findFirst().orElseThrow(NotFound::new);
+    }
+
+    public void pushInQue(String barcode) throws NotFound {
+        User user = userRepository.findByBarcode(barcode)
+                .orElseThrow(NotFound::new);
+        user.setInQue(true);
+        userRepository.save(user);
+    }
+
+    public void removeFromQue(String barcode) throws NotFound {
+        User user = userRepository.findByBarcode(barcode)
+                .orElseThrow(NotFound::new);
+        user.setInQue(false);
         userRepository.save(user);
     }
 }
