@@ -63,4 +63,39 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @ApiOperation("Push user in que")
+    @PostMapping("/que")
+    public ResponseEntity pushInQue(
+            @ApiParam(name = "barcode", required = true) @RequestParam(name = "barcode") String barcode) {
+        try {
+            userService.pushInQue(barcode);
+            return ResponseEntity.ok().build();
+        } catch (NotFound notFound) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @ApiOperation("Remove user from que")
+    @DeleteMapping("/que")
+    public ResponseEntity removeFromQue(
+            @ApiParam(name = "barcode", required = true) @RequestParam(name = "barcode") String barcode) {
+        try {
+            userService.removeFromQue(barcode);
+            return ResponseEntity.ok().build();
+        } catch (NotFound notFound) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @ApiOperation("Find first from que")
+    @GetMapping("/que")
+    public ResponseEntity findFirstFromQue() {
+        try {
+            return ResponseEntity.ok(
+                    userService.findFirstFromQue().getBarcode());
+        } catch (NotFound notFound) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
