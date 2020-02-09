@@ -43,7 +43,7 @@ public class ImageController {
             @RequestParam("background") MultipartFile background
     ) throws IOException {
         return ResponseEntity.ok(
-                backgroundService.replaceBackground(background.getBytes()));
+                backgroundService.replaceBackground(background.getBytes()).getId());
     }
 
     @ApiOperation(value = "upload photo")
@@ -57,7 +57,7 @@ public class ImageController {
         }
         try {
             return ResponseEntity.ok(
-                    imageService.uploadPhoto(barcode, photo.getBytes()));
+                    imageService.uploadPhoto(barcode, photo.getBytes()).getBarcode());
         } catch (NotFound notFound) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("There are no backgrounds on server");
@@ -91,6 +91,22 @@ public class ImageController {
         response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
         response.getOutputStream().write(
                 imageService.findPhotosByBarcode(barcode).getEditedImage());
+        response.getOutputStream().close();
+    }
+
+    @ApiOperation(value = "get photo link")
+    @GetMapping("/display/orig/{barcode}")
+    public void displayOrigPhotoByBarcode(
+            @ApiParam(name = "barcode", required = true) @PathVariable("barcode") String barcode,
+            HttpServletResponse response, HttpServletRequest request)
+            throws ServletException, IOException, NotFound {
+
+        if (StringUtils.isEmpty(barcode)) {
+            throw new IllegalArgumentException("Empty barcode");
+        }
+        response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
+        response.getOutputStream().write(
+                imageService.findPhotosByBarcode(barcode).getOriginalImage());
         response.getOutputStream().close();
     }
 }

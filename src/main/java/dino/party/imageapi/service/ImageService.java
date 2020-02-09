@@ -22,9 +22,11 @@ public class ImageService {
     }
 
     public Image uploadPhoto(String barcode, byte[] photo) throws IOException, NotFound {
+        Image image = imageRepository.findByBarcode(barcode)
+                .orElse(new Image(barcode, photo, null));
         byte[] background = backgroundService.findAnyBackground().getImage();
-        byte[] editedPhoto = backgroundCutter.chromaToBackground(photo, background, "png");
-        return imageRepository.save(new Image(barcode, photo, editedPhoto));
+        image.setEditedImage(backgroundCutter.chromaToBackground(photo, background, "png"));
+        return imageRepository.save(image);
     }
 
     public Image findPhotosByBarcode(String barcode) throws NotFound {
