@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link rel='stylesheet' type='text/css' href='style.css' media='screen'/>
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet"/>
+	</head>
+	<body>
+	<form action='print.html' name='main_form'>
+			<div class='caption'>
+				<b>Печать фотографий</b><br>
+			</div>
+			<input type='text' name='barcode' id='barcode' class='upperInputBox'><p>
+	</form>
+	<a href="index.html"><img src='./res/logo360.png' class='logo'></a>
+		<script>
+			var parseQueryString = function (strQuery) {
+				var strSearch   = strQuery.substr(1),
+					strPattern  = /([^=]+)=([^&]+)&?/ig,
+					arrMatch    = strPattern.exec(strSearch),
+					objRes      = {};
+				while (arrMatch != null) {
+					objRes[arrMatch[1]] = arrMatch[2];
+					arrMatch = strPattern.exec(strSearch);
+				}
+				return objRes;
+			};
+			var queryStr = parseQueryString(window.location.search);
+			var barcode = queryStr['barcode'];
+			document.write('<a href = "http://10.0.14.185:8080/api/photos/display/' + barcode + '"><img id="foo" src=http://10.0.14.185:8080/api/photos/display/' + barcode + " class='image' onerror=\"document.getElementById('foo').src = './res/not_found.png';\"></a>");
+			//document.write('<form action="index.html" name="print"><div class="caption"><b>Печать фотографий</b><br></div><p><input type="submit" class="button" value="Печать"></p></form>');
+		</script>
+	</body>
+</html>
