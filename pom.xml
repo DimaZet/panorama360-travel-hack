@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>dino.party</groupId>
 	<artifactId>image-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>image-api</name>
 	<description>Image management and processing</description>
 

@@ -73,8 +73,16 @@ public class BackgroundCutter {
     }
 
     private void setBackground(MarvinImage image, MarvinImage background) {
-        for(int y=0; y<image.getHeight(); y++){
-            for(int x=0; x<image.getWidth(); x++){
+        int minHeight = image.getHeight();
+        if (minHeight > background.getHeight()) {
+            minHeight = background.getHeight();
+        }
+        int minWidth = image.getWidth();
+        if (minWidth > background.getWidth()) {
+            minWidth = background.getWidth();
+        }
+        for (int y = 0; y < minHeight; y++) {
+            for (int x = 0; x < minWidth; x++) {
                 int alpha = image.getAlphaComponent(x,y);
                 int r = background.getIntComponent0(x, y);
                 int g = background.getIntComponent1(x, y);
